@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
-
-if ! command -v foreman &> /dev/null; then
-  echo "Installing foreman..."
-  gem install foreman
-fi
+set -e
 
 if ! command -v npm &> /dev/null; then
   echo "Error: NPM is required but not installed."
@@ -17,4 +13,4 @@ if [ ! -f "Procfile.dev" ]; then
   exit 1
 fi
 
-foreman start -f Procfile.dev "$@"
+exec bundle exec foreman start -f Procfile.dev "$@"

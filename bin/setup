@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 set -e
 
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+
+if [ ! -f "$ROOT_DIR/.env" ] && [ -f "$ROOT_DIR/env.example" ]; then
+  echo "==> Creating .env from env.example"
+  cp "$ROOT_DIR/env.example" "$ROOT_DIR/.env"
+fi
+
+cd "$ROOT_DIR"
+
 echo "==> Installing Ruby gems"
 bundle install
 

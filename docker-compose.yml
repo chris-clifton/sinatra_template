@@ -1,0 +1,26 @@
+services:
+  app:
+    build:
+      context: .
+      target: development
+      args:
+        APP_NAME: ${APP_NAME:-sinatra_template}
+        APP_TITLE: ${APP_TITLE:-Sinatra Template}
+    command: ./bin/dev
+    env_file:
+      - .env
+    environment:
+      - PORT=${PORT:-3000}
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    volumes:
+      - .:/app
+      - bundle:/bundle
+      - node_modules:/app/node_modules
+    tty: true
+    stdin_open: true
+
+volumes:
+  bundle:
+  node_modules:
+

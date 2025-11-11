@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 gem 'dotenv'
@@ -16,6 +18,7 @@ end
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
+  gem 'foreman', require: false
   gem 'pry'
   gem 'pry-byebug'
   gem 'rack-mini-profiler'

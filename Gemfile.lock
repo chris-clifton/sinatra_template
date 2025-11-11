@@ -16,6 +16,7 @@ GEM
     docile (1.4.1)
     dotenv (3.1.8)
     erubi (1.13.1)
+    foreman (0.89.1)
     json (2.16.0)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
@@ -143,6 +144,7 @@ DEPENDENCIES
   better_errors
   binding_of_caller
   dotenv
+  foreman
   json
   pry
   pry-byebug
@@ -160,4 +162,4 @@ DEPENDENCIES
   sinatra-tailwind (~> 0.2.1)
 
 BUNDLED WITH
-   2.6.2
+   2.5.11

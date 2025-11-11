@@ -1,0 +1,99 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'fileutils'
+
+def usage!
+  warn <<~USAGE
+    Usage: bin/rename_app NEW_NAME [--title "Custom Title"] [--slug custom_slug] [--move-dir]
+
+    Examples:
+      bin/rename_app "Artist Portfolio"
+      bin/rename_app realtor_site --title "Real Estate" --move-dir
+  USAGE
+  exit 1
+end
+
+raw_input = ARGV.shift || usage!
+
+options = {
+  move_dir: false
+}
+
+while (arg = ARGV.shift)
+  case arg
+  when '--title'
+    options[:title] = ARGV.shift || usage!
+  when '--slug'
+    options[:slug] = ARGV.shift || usage!
+  when '--move-dir'
+    options[:move_dir] = true
+  else
+    warn "Unknown option: #{arg}"
+    usage!
+  end
+end
+
+def build_slug(source)
+  cleaned = source.to_s.downcase.gsub(/[^a-z0-9]+/, '_').gsub(/_{2,}/, '_').gsub(/^_|_$/, '')
+  cleaned.empty? ? nil : cleaned
+end
+
+slug = build_slug(options[:slug] || raw_input)
+if slug.nil?
+  warn "Could not derive a valid slug from '#{options[:slug] || raw_input}'. Use --slug to provide one explicitly."
+  exit 1
+end
+
+title = (options[:title] || raw_input).split(/[\s_-]+/).map(&:capitalize).join(' ').strip
+if title.empty?
+  warn 'Could not derive a valid title.'
+  exit 1
+end
+
+root_dir = File.expand_path('..', __dir__)
+env_files = [File.join(root_dir, 'env.example'), File.join(root_dir, '.env')].uniq.select { |path| File.exist?(path) }
+
+quoted_title = %("#{title.gsub('"', '\"')}")
+
+env_files.each do |path|
+  lines = File.readlines(path, chomp: true)
+  replacements = {
+    'APP_NAME' => slug,
+    'APP_TITLE' => quoted_title
+  }
+
+  replacements.each do |key, value|
+    replaced = false
+    lines.map! do |line|
+      if line.start_with?("#{key}=")
+        replaced = true
+        "#{key}=#{value}"
+      else
+        line
+      end
+    end
+    lines << "#{key}=#{value}" unless replaced
+  end
+
+  File.write(path, "#{lines.join("\n")}\n")
+  puts "Updated #{path}"
+end
+
+puts 'No env files detected. Create .env (run bin/setup) to persist APP_NAME / APP_TITLE.' if env_files.empty?
+
+if options[:move_dir]
+  parent = File.expand_path('..', root_dir)
+  target = File.join(parent, slug)
+
+  if File.expand_path(root_dir) == target
+    puts "Project directory already named '#{slug}'."
+  elsif File.exist?(target)
+    warn "Cannot rename directory: #{target} already exists."
+  else
+    FileUtils.mv(root_dir, target)
+    puts "Renamed project directory to #{target}."
+  end
+end
+
+puts "App name set to '#{slug}' (title: '#{title}')."
