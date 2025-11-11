@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+
+echo "==> Installing Ruby gems"
+bundle install
+
+echo "==> Installing npm packages"
+npm install
+
+echo "==> Building assets"
+npm run build
+
+echo "Setup complete! Run ./bin/dev to start the app."
+

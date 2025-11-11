@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+if ! command -v foreman &> /dev/null; then
+  echo "Installing foreman..."
+  gem install foreman
+fi
+
+if ! command -v npm &> /dev/null; then
+  echo "Error: NPM is required but not installed."
+  echo "Please install Node.js and NPM first."
+  exit 1
+fi
+
+if [ ! -f "Procfile.dev" ]; then
+  echo "Error: Procfile.dev not found."
+  echo "Please run 'bundle exec tailwind setup' first."
+  exit 1
+fi
+
+foreman start -f Procfile.dev "$@"

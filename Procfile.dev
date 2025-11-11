@@ -1,0 +1,3 @@
+web: bundle exec rackup -p ${PORT:-9292}
+css: bundle exec tailwind watch
+js: npm run dev:js
